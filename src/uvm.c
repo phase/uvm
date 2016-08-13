@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "ins.h"
 
-char* readFile(char* fileName) {
+File readFile(char* fileName) {
   FILE* fileptr;
   char* buffer;
   long filelen;
@@ -10,13 +10,15 @@ char* readFile(char* fileName) {
   fileptr = fopen(fileName, "rb");
   fseek(fileptr, 0, SEEK_END);
   filelen = ftell(fileptr);
-  printf("File length: %ld", filelen);
   rewind(fileptr);
 
   buffer = (char*) malloc(filelen * sizeof(char));
   fread(buffer, filelen, 1, fileptr);
   fclose(fileptr);
-  return buffer;
+  File file;
+  file.length = filelen;
+  file.data = buffer;
+  return file;
 }
 
 int main(int argc, char** argv) {
@@ -24,15 +26,12 @@ int main(int argc, char** argv) {
     printf("%s <file>\n", argv[0]);
   }
   else {
-    char* buffer = readFile(argv[1]);
+    File file = readFile(argv[1]);
+    InstructionList instructions = readInstructions(file);
 
-    Instruction* instructions = readInstructions(buffer);
-    int length = sizeof(instructions) / sizeof(instructions[0]);
-    free(buffer);
-
-    for (int i = 0; i < length; i++) {
-      Instruction ins = instructions[i];
-      printf("Ins: %x\n", ins.data.whole);
+    for (int i = 0; i < instructions.length; i++) {
+      Instruction ins = instructions.instructions[i];
+      printf("Ins#%x: %08x\n", i, ins.data.whole);
     }
   }
   return 0;

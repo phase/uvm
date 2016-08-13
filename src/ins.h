@@ -1,3 +1,8 @@
+typedef struct {
+  int length;
+  char* data;
+} File;
+
 #define INS_LENGTH 32 // Instructions are 32 bits long
 
 typedef struct {
@@ -23,4 +28,9 @@ typedef struct {
   } data;
 } Instruction;
 
-Instruction* readInstructions(char* buffer);
+typedef struct {
+  int length;
+  Instruction* instructions;
+} InstructionList;
+
+InstructionList readInstructions(File file);
